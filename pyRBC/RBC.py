@@ -44,9 +44,9 @@ class RBC:
             I_t = self.investment_function(Y_t, K_t)
             C_t = self.consumption_function(Y_t, I_t)
             euler_error = self.euler_equation(K_t, L[t], r)
-            while abs(euler_error) > 1e-8:
-                r += euler_error / 10
-                euler_error = self.euler_equation(K_t, L[t], r)
+            #while abs(euler_error) > 1e-8:
+            #    r += euler_error / 10
+            #    euler_error = self.euler_equation(K_t, L[t], r)
             K.append(K_t)
             Y.append(Y_t)
             I.append(I_t)
