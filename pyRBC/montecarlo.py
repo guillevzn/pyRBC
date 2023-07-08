@@ -7,6 +7,9 @@ fred = easyfred.Fred(api_key='733fa628f2c2813c263501118e80e79c')
 data = fred.get_table('SP500')
 data = data[['date', 'value']]
 data.columns = ['date', 'close']
+
+# %%
+data.close = pd.to_numeric(data.close, errors='coerce')
 data = data[data.close != '.']
 data.close = pd.to_numeric(data.close)
 
