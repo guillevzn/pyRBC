@@ -2,32 +2,45 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class RBC:
-    def __init__(self, model_type, alpha, beta, delta):
-        self.model_type = model_type
-        self.alpha = alpha
-        self.beta = beta
-        self.delta = delta
-        
-    def production_function(self, K, L):
-        if self.model_type == '0':
-            Y = K**self.alpha * L**(1-self.alpha)
-        
-        return Y
-        
-    def investment_function(self, Y, K):
-        I = (1 - self.delta) * K + Y - self.production_function(K, 1)
-        return I
-        
-    def consumption_function(self, Y, I):
-        C = Y - I
-        return C
-        
-    def euler_equation(self, K, L, r):
-        Y = self.production_function(K, L)
-        I = self.investment_function(Y, K)
-        C = self.consumption_function(Y, I)
-        euler_error = self.beta * (1 + r) * self.production_function(K, L) / (C * (1 + self.delta - r)) - 1
-        return euler_error
+    def __init__(self, observed, params, shocks):
+
+        '''
+        Observed variables
+        '''
+        self.Y = observed[0] # Steady state output
+        self.G = observed[1] # Steady state government spending
+        self.I = observed[2] # Steady state investment
+        self.C = self.Y - self.G - self.I # Steady state consumption
+        self.N = observed[3] # Steady-State fraction of hours worked
+        self.K = observed[4] # Steady state capital/output
+
+        '''
+        Parameters
+        '''
+        self.theta = params[0] # Capital income share
+        self.v = params[1] # Frisch elasticity
+
+        self.rho_z = params[2]
+        self.sigma_z = params[3]
+        self.rho_f = params[4]
+        self.sigma_f = params[5]
+        self.xi = params[6]
+
+        '''
+        Shocks
+        '''
+        self.epsilon = shocks[0]
+        self.omega = shocks[1]
+
+    def steady_state(self):
+        phi = ((1 - self.theta) * self.Y / self.N) / (self.C * (self.N ** (1 / self.v)))  # MRS leisure-consumption and labor demand
+        delta = self.I / self.K  # Steady state capital accumulation
+        R = self.theta * self.Y / self.K  # Demand for capital
+        r = -1 + (R + 1 - delta)  # Real interest rate
+        beta = 1 / (1 + r)  # Subjective discount rate
+        A = self.Y / ((self.K ** self.theta) * (self.N ** (1 - self.theta)))  # Technological scale parameter
+        w = (1 - self.theta) * self.Y / self.N  # Real wage
+        return beta, phi, A, self.theta, delta, self.G, self.v
         
     def simulate(self, K0, L, r0, T):
         K = [K0]
